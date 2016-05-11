@@ -23,7 +23,8 @@ value('froalaConfig', {})
         link: function (scope, element, attrs, ngModel) {
 
             var ctrl = {
-                editorInitialized: false
+                editorInitialized: false,
+                editorRegistered: false
             };
 
             scope.initMode = attrs.froalaInit ? MANUAL : AUTOMATIC;
@@ -41,10 +42,13 @@ value('froalaConfig', {})
 
                 //Instruct ngModel how to update the froala editor
                 ngModel.$render = function () {
-                    element.froalaEditor('html.set', ngModel.$viewValue || '', true);
-                    //This will reset the undo stack everytime the model changes externally. Can we fix this?
-                    element.froalaEditor('undo.reset');
-                    element.froalaEditor('undo.saveStep');
+                    if(ctrl.editorInitialized){
+                        element.froalaEditor('html.set', ngModel.$viewValue || '', true);
+                        //This will reset the undo stack everytime the model changes externally. Can we fix this?
+                        element.froalaEditor('undo.reset');
+                        element.froalaEditor('undo.saveStep');
+                    }
+
                 };
 
                 ngModel.$isEmpty = function (value) {
@@ -55,7 +59,7 @@ value('froalaConfig', {})
 
             ctrl.createEditor = function () {
                 ctrl.listeningEvents = ['froalaEditor'];
-                if (!ctrl.editorInitialized) {
+                if (!ctrl.editorRegistered) {
                     ctrl.options = angular.extend({}, defaultConfig, froalaConfig, scope.froalaOptions);
 
                     if (ctrl.options.immediateAngularModelUpdate) {
@@ -79,7 +83,7 @@ value('froalaConfig', {})
                         scope.froalaOptions.froalaEditor = ctrl.froalaEditor;
                     }
 
-                    ctrl.editorInitialized = ctrl.froalaEditor ? true : false;
+                    ctrl.editorRegistered = ctrl.froalaEditor ? true : false;
                 }
             };
 
@@ -92,6 +96,12 @@ value('froalaConfig', {})
 
                 element.on('froalaEditor.contentChanged', function () {
                     scope.$evalAsync(ctrl.updateModelView);
+                });
+
+                element.on('froalaEditor.initialized', function () {
+                    element.off('froalaEditor.initialized');
+                    ctrl.editorInitialized = ctrl.froalaEditor ? true : false;
+                    ngModel.$render();
                 });
 
                 scope.$on('$destroy', function () {
@@ -135,17 +145,17 @@ value('froalaConfig', {})
     };
 }])
 .directive('froalaView', ['$sce', function ($sce) {
-	return {
-		restrict: 'ACM',
-		scope: false,
-		link: function (scope, element, attrs) {
-			element.addClass('fr-view');
-			scope.$watch(attrs.froalaView, function (nv) {
-				if (nv || nv === ''){
-					var explicitlyTrustedValue = $sce.trustAsHtml(nv);
-					element.html(explicitlyTrustedValue.toString());
-				}
-			});
-		}
-	};
+    return {
+        restrict: 'ACM',
+        scope: false,
+        link: function (scope, element, attrs) {
+            element.addClass('fr-view');
+            scope.$watch(attrs.froalaView, function (nv) {
+                if (nv || nv === ''){
+                    var explicitlyTrustedValue = $sce.trustAsHtml(nv);
+                    element.html(explicitlyTrustedValue.toString());
+                }
+            });
+        }
+    };
 }]);
