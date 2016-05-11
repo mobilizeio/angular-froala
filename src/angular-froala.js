@@ -53,7 +53,7 @@ value('froalaConfig', {})
 
                 ngModel.$isEmpty = function (value) {
                   var isEmpty = element.froalaEditor('node.isEmpty', jQuery('<div>' + value + '</div>').get(0));
-                  return value === undefined || isEmpty;
+                  return value === undefined || value === null || isEmpty;
                 };
             };
 
@@ -105,6 +105,7 @@ value('froalaConfig', {})
                 });
 
                 scope.$on('$destroy', function () {
+                    ctrl.listeningEvents.push('froalaEditor.contentChanged');
                     element.off(ctrl.listeningEvents.join(" "));
                     element.froalaEditor('destroy');
                 });
