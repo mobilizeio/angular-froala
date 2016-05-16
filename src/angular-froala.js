@@ -37,6 +37,7 @@ value('froalaConfig', {})
 
                 //init the editor
                 if (scope.initMode === AUTOMATIC) {
+                    ctrl.editorInitialized = true;
                     ctrl.createEditor();
                 }
 
@@ -98,11 +99,14 @@ value('froalaConfig', {})
                     scope.$evalAsync(ctrl.updateModelView);
                 });
 
-                element.on('froalaEditor.initialized', function () {
-                    element.off('froalaEditor.initialized');
-                    ctrl.editorInitialized = ctrl.froalaEditor ? true : false;
-                    ngModel.$render();
-                });
+                if(!ctrl.editorInitialized){
+                    element.on('froalaEditor.initialized', function () {
+                        element.off('froalaEditor.initialized');
+                        ctrl.editorInitialized = ctrl.froalaEditor ? true : false;
+                        ngModel.$render();
+                    });
+
+                }
 
                 scope.$on('$destroy', function () {
                     ctrl.listeningEvents.push('froalaEditor.contentChanged');
