@@ -110,6 +110,7 @@ value('froalaConfig', {})
 
                 scope.$on('$destroy', function () {
                     ctrl.listeningEvents.push('froalaEditor.contentChanged');
+                    ctrl.editorInitialized = false;
                     element.off(ctrl.listeningEvents.join(" "));
                     element.froalaEditor('destroy');
                 });
