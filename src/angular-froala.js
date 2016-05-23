@@ -127,9 +127,6 @@ value('froalaConfig', {})
                     ctrl.listeningEvents.push('froalaEditor.contentChanged');
                     ctrl.editorInitialized = false;
                     element.off(ctrl.listeningEvents.join(" "));
-                    if(isInitialized){
-                        element.froalaEditor('destroy');
-                    }
                 });
             };
 
