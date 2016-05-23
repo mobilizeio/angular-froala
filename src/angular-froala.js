@@ -56,6 +56,27 @@ value('froalaConfig', {})
                   var isEmpty = element.froalaEditor('node.isEmpty', jQuery('<div>' + value + '</div>').get(0));
                   return value === undefined || value === null || isEmpty;
                 };
+
+                //For DOM -> model validation
+                ngModel.$parsers.unshift(function (value) {
+                    var valid = true;
+                    if(scope.froalaOptions.required){
+                        valid = !element.froalaEditor('core.isEmpty');
+                        ngModel.$setValidity('required_err', valid);
+                    }
+                    return valid ? value : undefined;
+                });
+
+                //For model -> DOM validation
+                ngModel.$formatters.unshift(function (value) {
+                    var valid = true;
+                    if(scope.froalaOptions.required){
+                        valid = !element.froalaEditor('core.isEmpty');
+                    }
+                    ngModel.$setValidity('required_err', valid);
+                    return value;
+                });
+
             };
 
             ctrl.createEditor = function () {
