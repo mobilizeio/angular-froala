@@ -66,6 +66,9 @@ value('froalaConfig', {})
                     if (ctrl.options.immediateAngularModelUpdate) {
                         ctrl.listeningEvents.push('keyup');
                     }
+                    if(ctrl.options.events){
+                        ctrl.bindInitilizeEvent();
+                    }
 
                     // Register events provided in the options
                     // Registering events before initializing the editor will bind the initialized event correctly.
@@ -88,6 +91,17 @@ value('froalaConfig', {})
                 }
             };
 
+            ctrl.bindInitilizeEvent = function(){
+                var originalInitializeCall = ctrl.options.events['froalaEditor.initialized'];
+                ctrl.options.events['froalaEditor.initialized'] = function(){
+                    ctrl.editorInitialized = true;
+                    ngModel.$render();
+                    if(originalInitializeCall){
+                        originalInitializeCall.call(ctrl.froalaEditor);
+                    }
+                }
+            }
+
             ctrl.initListeners = function () {
                 if (ctrl.options.immediateAngularModelUpdate) {
                     ctrl.froalaElement.on('keyup', function () {
@@ -109,10 +123,13 @@ value('froalaConfig', {})
                 }
 
                 scope.$on('$destroy', function () {
+                    var isInitialized = ctrl.editorInitialized;
                     ctrl.listeningEvents.push('froalaEditor.contentChanged');
                     ctrl.editorInitialized = false;
                     element.off(ctrl.listeningEvents.join(" "));
-                    element.froalaEditor('destroy');
+                    if(isInitialized){
+                        element.froalaEditor('destroy');
+                    }
                 });
             };
 
