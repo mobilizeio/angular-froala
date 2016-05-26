@@ -154,6 +154,9 @@ value('froalaConfig', {})
             ctrl.updateModelView = function () {
                 var returnedHtml = element.froalaEditor('html.get');
                 if (angular.isString(returnedHtml)) {
+                    if(/[\u0590-\u05FF]/.test(returnedHtml)){
+                       returnedHtml = "<div dir='rtl'>"+returnedHtml+"</div>";
+                    }
                     ngModel.$setViewValue(returnedHtml);
                 }
             };
