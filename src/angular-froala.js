@@ -132,7 +132,10 @@ value('froalaConfig', {})
 
                 ctrl.froalaElement.on('$destroy', function(){
                     ctrl.froalaElement.off('$destroy');
-                    ctrl.froalaEditor('destroy');
+                    if(ctrl.editorInitialized){
+                        ctrl.froalaEditor('destroy');
+                    }
+
                     ctrl.editorInitialized = false;
                 });
 
