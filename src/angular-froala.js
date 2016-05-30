@@ -53,7 +53,7 @@ value('froalaConfig', {})
                 };
 
                 ngModel.$isEmpty = function (value) {
-                  var isEmpty = element.froalaEditor('node.isEmpty', jQuery('<div>' + value + '</div>').get(0));
+                  var isEmpty = !ctrl.editorInitialized ? true : element.froalaEditor('node.isEmpty', jQuery('<div>' + value + '</div>').get(0));
                   return value === undefined || value === null || isEmpty;
                 };
 
@@ -130,6 +130,12 @@ value('froalaConfig', {})
                     });
                 }
 
+                ctrl.froalaElement.on('$destroy', function(){
+                    ctrl.froalaElement.off('$destroy');
+                    ctrl.froalaEditor('destroy');
+                    ctrl.editorInitialized = false;
+                });
+
                 element.on('froalaEditor.contentChanged', function () {
                     scope.$evalAsync(ctrl.updateModelView);
                 });
@@ -173,7 +179,7 @@ value('froalaConfig', {})
                 var controls = {
                     initialize: ctrl.createEditor,
                     destroy: function () {
-                        if (_ctrl.froalaEditor) {
+                        if (_ctrl.froalaEditor && _ctrl.editorInitialized) {
                             _ctrl.froalaEditor('destroy');
                             _ctrl.editorInitialized = false;
                         }
