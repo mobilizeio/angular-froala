@@ -132,11 +132,7 @@ value('froalaConfig', {})
 
                 ctrl.froalaElement.on('$destroy', function(){
                     ctrl.froalaElement.off('$destroy');
-                    if(ctrl.editorInitialized){
-                        ctrl.froalaEditor('destroy');
-                    }
-
-                    ctrl.editorInitialized = false;
+                    destroyOnce();
                 });
 
                 element.on('froalaEditor.contentChanged', function () {
@@ -153,10 +149,9 @@ value('froalaConfig', {})
                 }
 
                 scope.$on('$destroy', function () {
-                    var isInitialized = ctrl.editorInitialized;
                     ctrl.listeningEvents.push('froalaEditor.contentChanged');
-                    ctrl.editorInitialized = false;
                     element.off(ctrl.listeningEvents.join(" "));
+                    destroyOnce();
                 });
             };
 
@@ -182,9 +177,8 @@ value('froalaConfig', {})
                 var controls = {
                     initialize: ctrl.createEditor,
                     destroy: function () {
-                        if (_ctrl.froalaEditor && _ctrl.editorInitialized) {
-                            _ctrl.froalaEditor('destroy');
-                            _ctrl.editorInitialized = false;
+                        if (_ctrl.froalaEditor) {
+                            destroyOnce();
                         }
                     },
                     getEditor: function () {
@@ -194,6 +188,14 @@ value('froalaConfig', {})
                 scope.initFunction({initControls: controls});
             }
             ctrl.init();
+
+            function destroyOnce(){
+                if(ctrl.editorInitialized){
+                        ctrl.froalaEditor('destroy');
+                    }
+
+                    ctrl.editorInitialized = false;
+            }
         }
     };
 }])
