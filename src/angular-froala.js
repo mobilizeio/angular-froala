@@ -69,11 +69,7 @@ value('froalaConfig', {})
 
                 //For model -> DOM validation
                 ngModel.$formatters.unshift(function (value) {
-                    var valid = true;
-                    if(scope.froalaOptions.required){
-                        valid = !element.froalaEditor('core.isEmpty');
-                    }
-                    ngModel.$setValidity('required_err', valid);
+                    updateRequireValidator();
                     return value;
                 });
 
@@ -195,6 +191,14 @@ value('froalaConfig', {})
                     }
 
                     ctrl.editorInitialized = false;
+            }
+
+            function updateRequireValidator(){
+                var valid = true;
+                if(scope.froalaOptions.required){
+                    valid = !element.froalaEditor('core.isEmpty');
+                }
+                ngModel.$setValidity('required_err', valid);
             }
         }
     };
