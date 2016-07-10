@@ -112,13 +112,13 @@ value('froalaConfig', {})
             ctrl.bindInitializeEvent = function() {
                 var originalInitializeCall = ctrl.options.events['froalaEditor.initialized'];
 
-                function init() {
+                function init(e, editor) {
                     ctrl.editorInitialized = true;
                     ngModel.$render();
                     updateRequireValidator();
 
                     if (originalInitializeCall && originalInitializeCall.toString() !== init.toString()) {
-                        originalInitializeCall.call();
+                        originalInitializeCall.call(e, editor);
                     }
                 }
 
