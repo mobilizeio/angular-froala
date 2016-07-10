@@ -83,8 +83,9 @@ value('froalaConfig', {})
                     if (ctrl.options.immediateAngularModelUpdate) {
                         ctrl.listeningEvents.push('keyup');
                     }
+
                     if(ctrl.options.events){
-                        ctrl.bindInitilizeEvent();
+                        ctrl.bindInitializeEvent();
                     }
 
                     // Register events provided in the options
@@ -108,16 +109,20 @@ value('froalaConfig', {})
                 }
             };
 
-            ctrl.bindInitilizeEvent = function(){
+            ctrl.bindInitializeEvent = function() {
                 var originalInitializeCall = ctrl.options.events['froalaEditor.initialized'];
-                ctrl.options.events['froalaEditor.initialized'] = function(){
+
+                function init() {
                     ctrl.editorInitialized = true;
                     ngModel.$render();
                     updateRequireValidator();
-                    if(originalInitializeCall){
-                        originalInitializeCall.call(ctrl.froalaEditor);
+
+                    if (originalInitializeCall && originalInitializeCall.toString() !== init.toString()) {
+                        originalInitializeCall.call();
                     }
                 }
+
+                ctrl.options.events['froalaEditor.initialized'] = init;
             }
 
             ctrl.initListeners = function () {
